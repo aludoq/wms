@@ -36,13 +36,13 @@ def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
 
 def search_item(df: pd.DataFrame, item_code: str) -> Tuple[pd.DataFrame, Optional[str]]:
     """Searches for an item by its code in the DataFrame."""
-    if 'Código do Item' not in df.columns:
-        error_message = "Coluna 'Código do Item' não encontrada."
+    if 'codigo' not in df.columns:
+        error_message = "Coluna 'codigo' não encontrada."
         st.error(error_message)
         return pd.DataFrame(), error_message
     try:
         code_to_search = int(item_code)
-        resultados = df[df['Código do Item'] == code_to_search]
+        resultados = df[df['codigo'] == code_to_search]
         return resultados, None
     except ValueError:
         error_message = "Por favor, digite um código de item válido (números inteiros)."
@@ -51,7 +51,7 @@ def search_item(df: pd.DataFrame, item_code: str) -> Tuple[pd.DataFrame, Optiona
 
 def main():
     """Main function to run the Streamlit application."""
-    st.set_page_config(page_title="Consulta de Itens")
+    st.set_page_config(page_title="Consulta de Estoque WMS")
     st.title("Consulta de Itens por Código")
 
     df_raw = load_data(FILE_PATH)
@@ -77,7 +77,7 @@ def main():
     if not df_filtrado.empty:
         st.write(f"Dados exibidos para a data: **{df_filtrado['datasalva_formatada'].iloc[0].strftime('%d/%m/%Y')}**")
 
-    codigo_busca = st.text_input("Digite o código do item:")
+    codigo_busca = st.text_input("Digite o código do item com 7 digitos:")
 
     if codigo_busca:
         resultados, _ = search_item(df_filtrado, codigo_busca)
