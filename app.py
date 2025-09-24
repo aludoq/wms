@@ -7,9 +7,10 @@ FILE_PATH = 'WMS.xlsm'
 
 @st.cache_data
 def load_data(file_path: str) -> Optional[pd.DataFrame]:
-    """Loads data from the specified Excel file."""
+    """Carrega dados do arquivo Excel especificado."""
     try:
-        return pd.read_excel(file_path, sheet_name='WMS.xlsm')
+        # Altere 'NomeDaSuaAbaAqui' para o nome da aba correta
+        return pd.read_excel(file_path, sheet_name='WMS')
     except FileNotFoundError:
         st.error(f"Arquivo '{file_path}' não encontrado. Verifique se o nome está correto.")
         return None
@@ -18,7 +19,7 @@ def load_data(file_path: str) -> Optional[pd.DataFrame]:
         return None
 
 def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
-    """Preprocesses the DataFrame by cleaning columns and handling dates."""
+    """Pré-processa o DataFrame limpando colunas e manipulando datas."""
     df = df.copy()
     df.dropna(axis=1, how='all', inplace=True)
 
@@ -30,12 +31,12 @@ def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
         return None
 
     df['datasalva'] = pd.to_datetime(df['datasalva'], errors='coerce')
-    df.dropna(subset=['datasalva'], inplace=True) # Remove rows where date conversion failed
+    df.dropna(subset=['datasalva'], inplace=True) # Remove linhas onde a conversão falhou
     df['datasalva_formatada'] = df['datasalva'].dt.date
     return df
 
 def search_item(df: pd.DataFrame, item_code: str) -> Tuple[pd.DataFrame, Optional[str]]:
-    """Searches for an item by its code in the DataFrame."""
+    """Procura um item pelo seu código no DataFrame."""
     if 'codigo' not in df.columns:
         error_message = "Coluna 'codigo' não encontrada."
         st.error(error_message)
@@ -50,7 +51,7 @@ def search_item(df: pd.DataFrame, item_code: str) -> Tuple[pd.DataFrame, Optiona
         return pd.DataFrame(), error_message
 
 def main():
-    """Main function to run the Streamlit application."""
+    """Função principal para rodar o aplicativo Streamlit."""
     st.set_page_config(page_title="Consulta de Estoque WMS")
     st.title("Consulta de Itens por Código")
 
