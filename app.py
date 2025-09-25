@@ -2,18 +2,24 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from typing import Optional, Tuple
+import os # Importe o módulo os
 
 FILE_PATH = 'WMS.xlsm'
 
 @st.cache_data
 def load_data(file_path: str) -> Optional[pd.DataFrame]:
     """Carrega dados do arquivo Excel especificado."""
+    
+    # Adiciona a data de modificação do arquivo como um parâmetro para quebrar o cache
     try:
-        # Altere 'NomeDaSuaAbaAqui' para o nome da aba correta
-        return pd.read_excel(file_path, sheet_name='WMS')
+        mod_time = os.path.getmtime(file_path)
     except FileNotFoundError:
         st.error(f"Arquivo '{file_path}' não encontrado. Verifique se o nome está correto.")
         return None
+
+    try:
+        # Troque 'NomeDaSuaAbaAqui' para o nome da aba correta
+        return pd.read_excel(file_path, sheet_name='NomeDaSuaAbaAqui')
     except Exception as e:
         st.error(f"Ocorreu um erro ao ler o arquivo: {e}")
         return None
@@ -102,4 +108,5 @@ def main():
         st.info("Nenhum dado encontrado para a data selecionada.")
 
 if __name__ == "__main__":
+
     main()
