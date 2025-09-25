@@ -7,22 +7,21 @@ import os # Importe o módulo os
 FILE_PATH = 'WMS.xlsm'
 
 @st.cache_data
-def load_data(file_path: str) -> Optional[pd.DataFrame]:
+def load_data(file_path: str, mod_time: float) -> Optional[pd.DataFrame]:
     """Carrega dados do arquivo Excel especificado."""
     
-    # Adiciona a data de modificação do arquivo como um parâmetro para quebrar o cache
     try:
-        mod_time = os.path.getmtime(file_path)
-    except FileNotFoundError:
-        st.error(f"WMS.xlsm '{file_path}' não encontrado. Verifique se o nome está correto.")
-        return None
-
-    try:
-        # Troque 'NomeDaSuaAbaAqui' para o nome da aba correta
+        # A data de modificação é usada aqui como um parâmetro de cache,
+        # mas não é usada no resto da função.
         return pd.read_excel(file_path, sheet_name='WMS')
+    except FileNotFoundError:
+        st.error(f"Arquivo '{file_path}' não encontrado. Verifique se o nome está correto.")
+        return None
     except Exception as e:
         st.error(f"Ocorreu um erro ao ler o arquivo: {e}")
         return None
+
+# --- O resto do seu código (funções preprocess_data, search_item, etc.) ---
     
 def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
     """Pré-processa o DataFrame limpando colunas e manipulando datas."""
@@ -108,4 +107,5 @@ def main():
         st.info("Nenhum dado encontrado para a data selecionada.")
 
 if __name__ == "__main__":
+
     main()
