@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from typing import Optional, Tuple
-import os # Importe o módulo os
+import os
 
 FILE_PATH = 'WMS.xlsm'
 
@@ -11,7 +11,7 @@ def load_data(file_path: str, mod_time: float) -> Optional[pd.DataFrame]:
     """Carrega dados do arquivo Excel especificado."""
     
     try:
-        # A data de modificação é usada aqui como um parâmetro de cache,
+        # A data de modificação é usada como um parâmetro de cache,
         # mas não é usada no resto da função.
         return pd.read_excel(file_path, sheet_name='WMS')
     except FileNotFoundError:
@@ -21,8 +21,6 @@ def load_data(file_path: str, mod_time: float) -> Optional[pd.DataFrame]:
         st.error(f"Ocorreu um erro ao ler o arquivo: {e}")
         return None
 
-# --- O resto do seu código (funções preprocess_data, search_item, etc.) ---
-    
 def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
     """Pré-processa o DataFrame limpando colunas e manipulando datas."""
     df = df.copy()
@@ -36,7 +34,7 @@ def preprocess_data(df: pd.DataFrame) -> Optional[pd.DataFrame]:
         return None
 
     df['datasalva'] = pd.to_datetime(df['datasalva'], errors='coerce')
-    df.dropna(subset=['datasalva'], inplace=True) # Remove linhas onde a conversão falhou
+    df.dropna(subset=['datasalva'], inplace=True)
     df['datasalva_formatada'] = df['datasalva'].dt.date
     return df
 
@@ -60,7 +58,17 @@ def main():
     st.set_page_config(page_title="Consulta de Estoque WMS")
     st.title("Consulta de Itens por Código")
 
-    df_raw = load_data(FILE_PATH)
+    # --- CORREÇÃO AQUI ---
+    # 1. Obtém a data de modificação do arquivo
+    try:
+        mod_time = os.path.getmtime(FILE_PATH)
+    except FileNotFoundError:
+        st.error(f"Arquivo '{FILE_PATH}' não encontrado. Verifique se o nome está correto.")
+        st.stop()
+
+    # 2. Chama a função load_data passando o mod_time como parâmetro
+    df_raw = load_data(FILE_PATH, mod_time)
+
     if df_raw is None:
         st.stop()
 
@@ -107,5 +115,4 @@ def main():
         st.info("Nenhum dado encontrado para a data selecionada.")
 
 if __name__ == "__main__":
-
     main()
