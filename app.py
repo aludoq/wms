@@ -108,5 +108,4 @@ def main():
         st.info("Nenhum dado encontrado para a data selecionada.")
 
 if __name__ == "__main__":
-
     main()
